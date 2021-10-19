@@ -5,6 +5,7 @@
 #include "mmu.h"
 #include "proc.h"
 #include "sysfunc.h"
+#include <stdlib.h>
 
 int
 sys_fork(void)
@@ -101,7 +102,13 @@ sys_settickets(int)
 // read where round robin is implemented
 // if fork() is called and child created, then child should
 // have the same number of tickets as the parent.
-   return 0;   
+   int n;
+   if (argint(0,&n) < 0)
+      return -1;
+   n = 0;
+   proc->tickets = n;
+   return n;
+//   return 0;   
 }
 
 //  implement this function to get the stats of the 
@@ -120,4 +127,9 @@ sys_getpinfo(struct pstat*)
    return 0;
 }
 
+int 
+get_random(int total_tickets)
+{
+  return rand()%total_tickets + 1;
 
+}
