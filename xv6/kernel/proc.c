@@ -45,6 +45,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->tickets = 1;
   release(&ptable.lock);
 
   // Allocate kernel stack if possible.
@@ -273,6 +274,7 @@ scheduler(void)
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      cprintf("current process:%s, pid=%d, tickets=%d\n",p->name,p->pid,p->tickets);
       swtch(&cpu->scheduler, proc->context);
       switchkvm();
 
