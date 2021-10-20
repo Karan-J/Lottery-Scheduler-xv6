@@ -80,7 +80,10 @@ QEMUGDB := $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 
 # number of CPUs to emulate in QEMU
 ifndef CPUS
-CPUS := 2
+# [PROJECT-2]: The following code is modified by Shreyans (SSP210009) and Karan (KHJ200000)
+# Made number of CPUs to use in emulator from 2 to 1 for Project-2 requirements
+CPUS := 1
+# End of code modified
 endif
 
 QEMUOPTS := -hdb fs.img xv6.img -smp $(CPUS)

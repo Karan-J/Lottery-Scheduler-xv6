@@ -88,3 +88,38 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+//TODO:SK
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Added two new system calls here
+**/
+
+// sets the number of tickets of the calling process.
+//  By default each process should get one ticket.
+//  Call this function to increase/decrease the number of 
+//  tickets. Return 0 if successful and -1 otherwise
+//  e.g. caller function i/p < 1
+int 
+sys_settickets(void)
+{
+  // to implement further. refer proc.c, proc.h
+// read where round robin is implemented
+// if fork() is called and child created, then child should
+// have the same number of tickets as the parent.
+//    return 0;   
+    int n;
+    if (argint(0,&n) < 0)
+       return -1;
+    n = 0;
+    proc->tickets = n;
+    return n;
+//   return 0; 
+}
+
+int 
+sys_getpinfo(void)
+{
+  return 0;
+}
+/* End of code added */

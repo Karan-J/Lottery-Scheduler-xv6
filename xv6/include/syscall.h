@@ -23,5 +23,12 @@
 #define SYS_sbrk   19
 #define SYS_sleep  20
 #define SYS_uptime 21
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Added two new system calls here
+**/
+#define SYS_settickets 22
+#define SYS_getpinfo 23
+/* End of code added */
 
 #endif // _SYSCALL_H_

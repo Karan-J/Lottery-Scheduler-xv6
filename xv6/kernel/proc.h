@@ -74,6 +74,14 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  //TODO:SK
+  /** 
+  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+  * Added two new system calls here
+  **/
+ int tickets;                   // Number of tickets with the process
+ /* End of code added */
 };
 
 // Process memory is laid out contiguously, low addresses first:

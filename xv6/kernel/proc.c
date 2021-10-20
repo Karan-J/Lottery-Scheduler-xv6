@@ -5,6 +5,12 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Include files for using the random number generator for lottery
+**/
+#include "rand.h"
+/* End of code added */
 
 struct {
   struct spinlock lock;
@@ -45,6 +51,12 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  /** 
+  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+  * Assign atleast 1 ticket to the new process
+  **/
+  p->tickets = 1;
+  /* End of code added */
   release(&ptable.lock);
 
   // Allocate kernel stack if possible.
@@ -261,11 +273,45 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
+    /** 
+    * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+    * Added two new system calls here
+    **/
+    int process_tickets = 0;
+    int total_tickets = 0;
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    {
+      if(p->state != RUNNABLE)
+      {
+        continue;
+      }
+      
+      total_tickets += p->tickets;
+    }
+
+    int winner = random_at_most(total_tickets);
+    /* End of code added */
+
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * Added two new system calls here
+      **/
+      process_tickets += p->tickets;
+      //Test
+      cprintf("\nName: %s, Tickets: %d, Total Tickets: %d. Lottery Number: %d\n",p->name,process_tickets,total_tickets,winner);
+
+      if(process_tickets < winner)
+      {
+        continue;
+      }
+      /* End of code added */
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -279,6 +325,14 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
+
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * To avoid continuous increment of process tickets otherwise it will always be higher than random winner. We need to
+      * recalculate the number of tickets anyway after a process is done running
+      **/
+      break;
+      /* End of code added */
     }
     release(&ptable.lock);
 

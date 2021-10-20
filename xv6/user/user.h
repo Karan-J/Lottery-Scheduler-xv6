@@ -1,6 +1,13 @@
 #ifndef _USER_H_
 #define _USER_H_
 
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Added include file for the structure pstat which is a new structure added in the architecture for Project-2 requirements
+**/
+#include "pstat.h"
+/* End of code added */
+
 struct stat;
 
 // system calls
@@ -25,6 +32,13 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Added two new system calls here
+**/
+int settickets(int);
+int getpinfo(struct pstat*);
+/* End of code added */
 
 // user library functions (ulib.c)
 int stat(char*, struct stat*);

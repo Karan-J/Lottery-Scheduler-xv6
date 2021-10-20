@@ -23,5 +23,12 @@ int sys_unlink(void);
 int sys_wait(void);
 int sys_write(void);
 int sys_uptime(void);
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Added two new system calls here
+**/
+int sys_settickets(void);
+int sys_getpinfo(void);
+/* End of code added */
 
 #endif // _SYSFUNC_H_
