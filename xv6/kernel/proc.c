@@ -45,7 +45,6 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->tickets = 1;
   release(&ptable.lock);
 
   // Allocate kernel stack if possible.
@@ -257,46 +256,21 @@ void
 scheduler(void)
 {
   struct proc *p;
-  int process_found = 1;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
-
-    int tickets_passed = 0;
-    int total_tickets = 0;
-
-     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-      total_tickets = total_tickets + p->tickets;  
-    }
-
-    int winner = get_random(total_tickets);
-
-    if (process_found == 1)
-    { 
-       hlt();
-    }
-
-    process_found = 0;
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-      tickets_passed = tickets_passed + p->tickets;
-      if (tickets_passed < winner )
-      { 
-        continue;
-      }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       proc = p;
-      process_found = 1;
       switchuvm(p);
       p->state = RUNNING;
       swtch(&cpu->scheduler, proc->context);
