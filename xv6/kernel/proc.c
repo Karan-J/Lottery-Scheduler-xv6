@@ -262,6 +262,20 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
+    int current_tickets = 0;
+    int total_tickets = 0;
+
+//   Loop through the proc-table to calculate the total number of tickets
+     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+	if (p->state != RUNNABLE)
+	   continue;
+	total_tickets = total_tickets + p->tickets;
+    }
+
+//    int lottery_winner = get_random(total_tickets);
+    
+    current_tickets += 1;
+
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -274,7 +288,7 @@ scheduler(void)
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
-      cprintf("current process:%s, pid=%d, tickets=%d\n",p->name,p->pid,p->tickets);
+      cprintf("current process:%s, pid=%d, tickets=%d, total_tickets=%d\n",p->name,p->pid,p->tickets,total_tickets);
       swtch(&cpu->scheduler, proc->context);
       switchkvm();
 
