@@ -5,11 +5,13 @@
 #include "mmu.h"
 #include "proc.h"
 #include "sysfunc.h"
+
 /** 
  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
- * Added two new system calls here
+ * Added pstat.h include file for pstat structure usage
 **/
 #include "pstat.h"
+
 /* End of code added */
 
 int
@@ -95,69 +97,76 @@ sys_uptime(void)
   return xticks;
 }
 
-//TODO:SK
 /** 
  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
- * Added two new system calls here
+ * Added two new system calls here. Their definitions are given below
 **/
 
-// sets the number of tickets of the calling process.
-//  By default each process should get one ticket.
-//  Call this function to increase/decrease the number of 
-//  tickets. Return 0 if successful and -1 otherwise
-//  e.g. caller function i/p < 1
+/**
+ * @brief sys_settickets - This function is used to set the number of tickets of the calling process. By default, each new 
+ * process will have atleast 1 ticket by default. This function will change the number of tickets with the process.
+ * @return int - If successfull return 0 else return -1
+ */
 int 
 sys_settickets(void)
 {
-  // to implement further. refer proc.c, proc.h
-// read where round robin is implemented
-// if fork() is called and child created, then child should
-// have the same number of tickets as the parent.
-//    return 0;   
-    int tickets;
+  int tickets;  //Variable to fetch the number of tickets argument in
 
-    if (argint(0,&tickets) < 0)
-    {
-      return -1;
-    }
+  //Fetch the argument and assign it to tickets
+  if (argint(0,&tickets) < 0)
+  {
+    return -1;
+  }
 
-    if (tickets <= 0)
-    {
-      return -1;
-    }
-    
-    proc->tickets = tickets;
+  //If trying to assign negative or 0 tickets, give error
+  if (tickets <= 0)
+  {
+    return -1;
+  }
+  
+  //Assign the tickets to the process
+  proc->tickets = tickets;
 
-    return 0;
+  return 0;
 }
 
+/**
+ * @brief sys_getpinfo - This function is used to get the info about the process similar to ps function. It gives the data 
+ * present in the pstat structure
+ * @return int - If successfull return 0 else return -1
+ */
 int 
 sys_getpinfo(void)
 {
-  struct pstat* procstat;
-  struct proc* p;
+  struct proc* process;
+  struct pstat* procstruct;
 
   acquire(&ptable.lock);
-  if(argptr(0, (char **)(&procstat), sizeof(procstat)) < 0) 
+
+  //Bad pointer passed to the function. Give error
+  if(argptr(0, (char **)(&procstruct), sizeof(procstruct)) < 0) 
   {
     release(&ptable.lock);
     return -1;
   }
 
-  if(NULL == procstat)
+  //Bad NULL pointer passed to the function. Give error
+  if(NULL == procstruct)
   {
     release(&ptable.lock);
     return -1;
   }
 
-  for(p = ptable.proc; p != &(ptable.proc[NPROC]); p++) {
-    int index = p - ptable.proc;
-    if(p->state != UNUSED) 
+  //Iterate through the processes in the table and update pstat structure with the details of processes which are not unused
+  for(process = ptable.proc; process != &(ptable.proc[NPROC]); process++) 
+  {
+    int writeIndex = process - ptable.proc;
+    if(process->state != UNUSED) 
     {
-	      procstat->pid[index] = p->pid;
-        procstat->ticks[index] = p->ticks;
-        procstat->tickets[index] = p->tickets;
-        procstat->inuse[index] = p->inuse;
+	      procstruct->pid[writeIndex] = process->pid;
+        procstruct->ticks[writeIndex] = process->ticks;
+        procstruct->tickets[writeIndex] = process->tickets;
+        procstruct->inuse[writeIndex] = process->inuse;
     }
   }
   release(&ptable.lock);

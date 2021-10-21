@@ -1,6 +1,6 @@
 /** 
  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
- * Added rand.h file for random number generation. References mentioned below
+ * Added rand.h file for random number generation logic. References mentioned below
 **/
 
 /* A C-program for MT19937: Real number version                */
@@ -128,4 +128,5 @@ long random_at_most(long max) {
   // Truncated division is intentional
   return x/bin_size;
 }
+
 /* End of code added */

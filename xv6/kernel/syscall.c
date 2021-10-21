@@ -13,6 +13,7 @@
 **/
 extern int sys_settickets(void);
 extern int sys_getpinfo(void);
+
 /* End of code added */
 
 // User code makes a system call with INT T_SYSCALL.
@@ -111,12 +112,14 @@ static int (*syscalls[])(void) = {
 [SYS_wait]    sys_wait,
 [SYS_write]   sys_write,
 [SYS_uptime]  sys_uptime,
+
 /** 
  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
  * Added two new system calls here
 **/
 [SYS_settickets]  sys_settickets,
 [SYS_getpinfo]  sys_getpinfo,
+
 /* End of code added */
 };
 
