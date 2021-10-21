@@ -108,13 +108,21 @@ sys_settickets(void)
 // if fork() is called and child created, then child should
 // have the same number of tickets as the parent.
 //    return 0;   
-    int n;
-    if (argint(0,&n) < 0)
-       return -1;
-    n = 0;
-    proc->tickets = n;
-    return n;
-//   return 0; 
+    int tickets;
+
+    if (argint(0,&tickets) < 0)
+    {
+      return -1;
+    }
+
+    if (tickets <= 0)
+    {
+      return -1;
+    }
+    
+    proc->tickets = tickets;
+
+    return 0;
 }
 
 int 

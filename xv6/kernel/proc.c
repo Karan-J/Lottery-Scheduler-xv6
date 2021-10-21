@@ -53,7 +53,7 @@ found:
   p->pid = nextpid++;
   /** 
   * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
-  * Assign atleast 1 ticket to the new process
+  * Added two new system calls here
   **/
   p->tickets = 1;
   /* End of code added */
@@ -277,8 +277,8 @@ scheduler(void)
     * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
     * Added two new system calls here
     **/
-    int process_tickets = 0;
     int total_tickets = 0;
+    int process_tickets = 0;
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     {
@@ -304,8 +304,6 @@ scheduler(void)
       * Added two new system calls here
       **/
       process_tickets += p->tickets;
-      //Test
-      cprintf("\nName: %s, Tickets: %d, Total Tickets: %d. Lottery Number: %d\n",p->name,process_tickets,total_tickets,winner);
 
       if(process_tickets < winner)
       {
@@ -313,6 +311,8 @@ scheduler(void)
       }
       /* End of code added */
 
+      //Test
+      cprintf("\nName: %s, Tickets: %d, Total Tickets: %d. Lottery Number: %d\n",p->name,process_tickets,total_tickets,winner);
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
