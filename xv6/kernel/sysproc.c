@@ -5,6 +5,12 @@
 #include "mmu.h"
 #include "proc.h"
 #include "sysfunc.h"
+/** 
+ * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Added two new system calls here
+**/
+#include "pstat.h"
+/* End of code added */
 
 int
 sys_fork(void)
@@ -128,6 +134,33 @@ sys_settickets(void)
 int 
 sys_getpinfo(void)
 {
+  struct pstat* procstat;
+  struct proc* p;
+
+  acquire(&ptable.lock);
+  if(argptr(0, (char **)(&procstat), sizeof(procstat)) < 0) 
+  {
+    release(&ptable.lock);
+    return -1;
+  }
+
+  if(NULL == procstat)
+  {
+    release(&ptable.lock);
+    return -1;
+  }
+
+  for(p = ptable.proc; p != &(ptable.proc[NPROC]); p++) {
+    int index = p - ptable.proc;
+    if(p->state != UNUSED) 
+    {
+	      procstat->pid[index] = p->pid;
+        procstat->ticks[index] = p->ticks;
+        procstat->tickets[index] = p->tickets;
+        procstat->inuse[index] = p->inuse;
+    }
+  }
+  release(&ptable.lock);
   return 0;
 }
 /* End of code added */

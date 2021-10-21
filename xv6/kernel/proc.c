@@ -6,16 +6,19 @@
 #include "proc.h"
 #include "spinlock.h"
 /** 
- * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+ * [PROJECT-2]: The following code is added and modified by Shreyans (SSP210009) and Karan (KHJ200000)
  * Include files for using the random number generator for lottery
 **/
 #include "rand.h"
-/* End of code added */
 
-struct {
-  struct spinlock lock;
-  struct proc proc[NPROC];
-} ptable;
+//Commented this since we now need to make ptable public
+// struct {
+//   struct spinlock lock;
+//   struct proc proc[NPROC];
+// } ptable;
+
+struct ptable_global ptable;
+/* End of code added and modified*/
 
 static struct proc *initproc;
 
@@ -155,6 +158,12 @@ fork(void)
   }
   np->sz = proc->sz;
   np->parent = proc;
+  /** 
+  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+  * Added two new system calls here
+  **/
+  np->tickets = proc->tickets;
+  /* End of code added */
   *np->tf = *proc->tf;
 
   // Clear %eax so that fork returns 0 in the child.
@@ -277,24 +286,22 @@ scheduler(void)
     * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
     * Added two new system calls here
     **/
-    int total_tickets = 0;
-    int process_tickets = 0;
+    uint total_tickets = 0;
+    uint process_tickets = 0;
 
+    acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     {
-      if(p->state != RUNNABLE)
+      if(p->state == RUNNABLE)
       {
-        continue;
+        total_tickets += p->tickets;
       }
-      
-      total_tickets += p->tickets;
     }
 
-    int winner = random_at_most(total_tickets);
+    uint winner = random_at_most(total_tickets);
     /* End of code added */
 
     // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
@@ -312,14 +319,28 @@ scheduler(void)
       /* End of code added */
 
       //Test
-      cprintf("\nName: %s, Tickets: %d, Total Tickets: %d. Lottery Number: %d\n",p->name,process_tickets,total_tickets,winner);
+      // cprintf("\nName: %s, Tickets: %d, Total Tickets: %d. Lottery Number: %d\n",p->name,process_tickets,total_tickets,winner);
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * Added two new system calls here
+      **/
+      p->inuse = 1;
+      int tTicks = ticks;
+      /* End of code added */
       swtch(&cpu->scheduler, proc->context);
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * Added two new system calls here
+      **/
+      p->ticks += ticks - tTicks;
+      // p->inuse = 0;
+      /* End of code added */
       switchkvm();
 
       // Process is done running for now.

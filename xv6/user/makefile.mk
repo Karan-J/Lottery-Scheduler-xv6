@@ -2,18 +2,28 @@
 # user programs
 USER_PROGS := \
 	cat\
+	default_tickets\
 	echo\
 	forktest\
+	forktickets\
+	getpinfo\
 	grep\
+	high_sleep\
+	high_tickets\
 	init\
 	kill\
 	ln\
 	ls\
 	mkdir\
+	processesinuse\
+	random\
 	rm\
 	sh\
 	setticket\
+	stress_equal\
 	stressfs\
+	stress_manylow\
+	switch_tickets\
 	tester\
 	usertests\
 	wc\

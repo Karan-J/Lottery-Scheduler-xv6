@@ -7,6 +7,14 @@
 #include "syscall.h"
 #include "sysfunc.h"
 
+/** 
+* [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+* Added two new system calls here
+**/
+extern int sys_settickets(void);
+extern int sys_getpinfo(void);
+/* End of code added */
+
 // User code makes a system call with INT T_SYSCALL.
 // System call number in %eax.
 // Arguments on the stack, from the user call to the C
