@@ -15,7 +15,6 @@ USER_PROGS := \
 	ln\
 	ls\
 	mkdir\
-	plot\
 	processesinuse\
 	random\
 	rm\
