@@ -25,6 +25,7 @@ USER_PROGS := \
 	stress_manylow\
 	switch_tickets\
 	tester\
+	test_graph_plotter\
 	usertests\
 	wc\
 	zombie
