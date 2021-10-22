@@ -1,4 +1,5 @@
-
+# [PROJECT-2]: The following code is modified by Shreyans (SSP210009) and Karan (KHJ200000)
+# Added files for testing requirements of Project-2
 # user programs
 USER_PROGS := \
 	cat\
@@ -31,6 +32,7 @@ USER_PROGS := \
 	zombie
 
 USER_PROGS := $(addprefix user/, $(USER_PROGS))
+# End of code modified
 
 # user library files
 USER_LIBS := \

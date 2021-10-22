@@ -139,19 +139,19 @@ int
 sys_getpinfo(void)
 {
   struct proc* process;
-  struct pstat* procstruct;
+  struct pstat* proc_struct;
 
   acquire(&ptable.lock);
 
   //Bad pointer passed to the function. Give error
-  if(argptr(0, (char **)(&procstruct), sizeof(procstruct)) < 0) 
+  if(argptr(0, (char **)(&proc_struct), sizeof(proc_struct)) < 0) 
   {
     release(&ptable.lock);
     return -1;
   }
 
   //Bad NULL pointer passed to the function. Give error
-  if(NULL == procstruct)
+  if(NULL == proc_struct)
   {
     release(&ptable.lock);
     return -1;
@@ -163,10 +163,10 @@ sys_getpinfo(void)
     int writeIndex = process - ptable.proc;
     if(process->state != UNUSED) 
     {
-	      procstruct->pid[writeIndex] = process->pid;
-        procstruct->ticks[writeIndex] = process->ticks;
-        procstruct->tickets[writeIndex] = process->tickets;
-        procstruct->inuse[writeIndex] = process->inuse;
+	      proc_struct->pid[writeIndex] = process->pid;
+        proc_struct->ticks[writeIndex] = process->ticks;
+        proc_struct->tickets[writeIndex] = process->tickets;
+        proc_struct->inuse[writeIndex] = process->inuse;
     }
   }
   release(&ptable.lock);

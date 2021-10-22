@@ -300,6 +300,7 @@ scheduler(void)
     uint process_tickets = 0;   //Number of tickets with the process
 
     acquire(&ptable.lock);
+    
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     {
       if(p->state == RUNNABLE)
@@ -343,7 +344,7 @@ scheduler(void)
       * Process has got the CPU, trigger the inuse flag
       **/
       p->inuse = 1;
-      int tTicks = ticks;   //Initial ticks to calculate ticks elapsed for the process
+      int temp_ticks = ticks;   //Initial ticks to calculate ticks elapsed for the process
 
       /* End of code added */
 
@@ -353,7 +354,7 @@ scheduler(void)
       * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
       * Assign the number of ticks elapsed during process run to the process PCB
       **/
-      p->ticks += ticks - tTicks;
+      p->ticks += ticks - temp_ticks;
 
       /* End of code added */
 
