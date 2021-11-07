@@ -10,6 +10,15 @@
 #define SEG_TSS   6  // this process's task state
 #define NSEGS     7
 
+/** 
+* [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+* Include filed for pstat structure and spinlock structure to use in global ptable structure definition
+**/
+#include "pstat.h"
+#include "spinlock.h"
+
+/* End of code added */
+
 // Per-CPU state
 struct cpu {
   uchar id;                    // Local APIC ID; index into cpus[] below
@@ -74,6 +83,16 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  /** 
+  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+  * Added new parameters to keep track of tickets and ticks with the process and if the proccess is using the CPU or not
+  **/
+  int tickets;                   // Number of tickets with the process
+  int ticks;                     // Number of ticks elapsed for this process
+  int inuse;                     // If the proccess is using the CPU or not
+
+  /* End of code added */
 };
 
 // Process memory is laid out contiguously, low addresses first:
@@ -81,5 +100,19 @@ struct proc {
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+/** 
+* [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+* The extern ptable structure is defined here
+**/
+struct ptable_global
+{
+  struct spinlock lock;
+  struct proc proc[NPROC];
+};
+
+extern struct ptable_global ptable;   //Declaration for the global ptable structure as an extern variable
+
+/* End of code added */
 
 #endif // _PROC_H_

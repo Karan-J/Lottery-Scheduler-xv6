@@ -6,10 +6,23 @@
 #include "proc.h"
 #include "spinlock.h"
 
-struct {
-  struct spinlock lock;
-  struct proc proc[NPROC];
-} ptable;
+/** 
+ * [PROJECT-2]: The following code is added and modified by Shreyans (SSP210009) and Karan (KHJ200000)
+ * Include files for using the random number generator for lottery scheduler. rand function is referred from the internet. The
+ * related references are mentioned in rand.h
+**/
+#include "rand.h"
+
+//Commented this since we now need to make ptable public. This structure is now moved to proc.h and made extern
+
+// struct {
+//   struct spinlock lock;
+//   struct proc proc[NPROC];
+// } ptable;
+
+struct ptable_global ptable;  //This is the extern ptable structure
+
+/* End of code added and modified*/
 
 static struct proc *initproc;
 
@@ -45,6 +58,15 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+
+  /** 
+  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+  * By default, allocate each new process atleast 1 ticket for lottery
+  **/
+  p->tickets = 1;
+
+  /* End of code added */
+  
   release(&ptable.lock);
 
   // Allocate kernel stack if possible.
@@ -143,6 +165,15 @@ fork(void)
   }
   np->sz = proc->sz;
   np->parent = proc;
+
+  /** 
+  * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+  * When forked, the child process has to have same number of tickets as the parent process
+  **/
+  np->tickets = proc->tickets;
+
+  /* End of code added */
+
   *np->tf = *proc->tf;
 
   // Clear %eax so that fork returns 0 in the child.
@@ -261,11 +292,45 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    // Loop over process table looking for process to run.
+    /** 
+    * [PROJECT-2]: The following code is modified by Shreyans (SSP210009) and Karan (KHJ200000)
+    * Modified the code to convert RR scheduler to lottery scheduler
+    **/
+    uint total_tickets = 0;     //Total number of tickets
+    uint process_tickets = 0;   //Number of tickets with the process
+
     acquire(&ptable.lock);
+    
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    {
+      if(p->state == RUNNABLE)
+      {
+        total_tickets += p->tickets;  //Increment the total number of tickets by the number of tickets with the process
+      }
+    }
+
+    //The lottery is a random number less than or equal to total number of tickets. This function polls a random number
+    uint winner = random_at_most(total_tickets);  
+
+    /* End of code added */
+
+    // Loop over process table looking for process to run.
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * If tickets with the process is less than the lottery number, this process does not get the CPU
+      **/
+      process_tickets += p->tickets;
+
+      if(process_tickets < winner)
+      {
+        continue;
+      }
+
+      /* End of code added */
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -273,15 +338,42 @@ scheduler(void)
       proc = p;
       switchuvm(p);
       p->state = RUNNING;
+
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * Process has got the CPU, trigger the inuse flag
+      **/
+      p->inuse = 1;
+      int temp_ticks = ticks;   //Initial ticks to calculate ticks elapsed for the process
+
+      /* End of code added */
+
       swtch(&cpu->scheduler, proc->context);
+
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * Assign the number of ticks elapsed during process run to the process PCB
+      **/
+      p->ticks += ticks - temp_ticks;
+
+      /* End of code added */
+
       switchkvm();
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
+
+      /** 
+      * [PROJECT-2]: The following code is added by Shreyans (SSP210009) and Karan (KHJ200000)
+      * To avoid continuous increment of process tickets otherwise it will always be higher than random winner. We need to
+      * recalculate the number of tickets anyway after a process is done running
+      **/
+      break;
+
+      /* End of code added */
     }
     release(&ptable.lock);
-
   }
 }
 

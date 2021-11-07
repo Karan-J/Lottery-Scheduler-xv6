@@ -1,24 +1,38 @@
-
+# [PROJECT-2]: The following code is modified by Shreyans (SSP210009) and Karan (KHJ200000)
+# Added files for testing requirements of Project-2
 # user programs
 USER_PROGS := \
 	cat\
+	default_tickets\
 	echo\
 	forktest\
+	forktickets\
+	getpinfo\
 	grep\
+	high_sleep\
+	high_tickets\
 	init\
 	kill\
 	ln\
 	ls\
 	mkdir\
+	processesinuse\
+	random\
 	rm\
 	sh\
+	setticket\
+	stress_equal\
 	stressfs\
+	stress_manylow\
+	switch_tickets\
 	tester\
+	test_graph_plotter\
 	usertests\
 	wc\
 	zombie
 
 USER_PROGS := $(addprefix user/, $(USER_PROGS))
+# End of code modified
 
 # user library files
 USER_LIBS := \
